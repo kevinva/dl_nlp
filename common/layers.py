@@ -104,7 +104,7 @@ class Affine:
 class MatMul:
     def __init__(self, W):
         self.params = [W]
-        self.grads = [np.zeros_like(w)]
+        self.grads = [np.zeros_like(W)]
         self.x = None
     
     def forward(self, x):
