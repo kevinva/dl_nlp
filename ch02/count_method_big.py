@@ -16,11 +16,12 @@ print('calculating PPMI ...')
 W = ppmi(C, verbose=True)
 
 print('calculating SVD ...')
-# try:
-from sklearn.utilsextmath import randomized_svd
-U, S, V = randomized_svd(W, n_components=wordvec_size, n_iter=5, rando_state=None)
-# except ImportError:
-#     U, S, V = np.ligalg.svd(W)
+try:
+    print('Use sklearn SVD!!!!')
+    from sklearn.utils.extmath import randomized_svd
+    U, S, V = randomized_svd(W, n_components=wordvec_size, n_iter=5, random_state=None)
+except ImportError:
+    U, S, V = np.ligalg.svd(W)
 
 word_vecs = U[:, :wordvec_size]
 querys = ['you', 'year', 'car', 'love', 'honda']
