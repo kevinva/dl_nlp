@@ -149,8 +149,8 @@ class EmbeddingDot:
         self.cache = None
 
     def forward(self, h, idx):
-        target_W = self.embed.forward(idx)
-        out = np.sum(target_W * h, axis=1)
+        target_W = self.embed.forward(idx)  # target_W 即 输出层的权重W_out
+        out = np.sum(target_W * h, axis=1)  # h是输入层传过来的计算结果
         self.cache = (h, target_W)
         return out
 
