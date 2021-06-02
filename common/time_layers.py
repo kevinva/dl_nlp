@@ -103,16 +103,16 @@ class TimeEmbedding:
         self.W = W
 
     def forward(self, xs):
-        N, T = xs.shape   # hoho_todo, 如何传xs参数？(xs没有了D维)
+        N, T = xs.shape   # hoho_todo, 如何传xs参数？(xs没有了D维) || xs的每一行只是文字ID的序列，形状如：[[1, 3, 2], [45, 2, 3], ...]
         V, D = self.W.shape
 
-        out = np.empty((N, T, D), astype='f')
+        out = np.empty((N, T, D), dtype='f')
         self.layers = []
 
         for t in range(T):
             layer = Embedding(self.W)
             out[:, t, :] = layer.forward(xs[:, t])
-            self.layer.append(layer)
+            self.layers.append(layer)
         
         return out
 

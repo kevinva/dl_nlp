@@ -26,7 +26,7 @@ class SimpleRnnlm:
         self.rnn_layer = self.layers[1]
 
         self.params, self.grads = [], []
-        for layer in self.layer:
+        for layer in self.layers:
             self.params += layer.params
             self.grads += layer.grads
 
