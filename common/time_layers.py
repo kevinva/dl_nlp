@@ -1,4 +1,9 @@
+import sys
+sys.path.append('..')
+
 import numpy as np
+from common.layers import Embedding
+from common.functions import *
 
 class RNN:
     def __init__(self, Wx, Wh, b):
@@ -89,3 +94,111 @@ class TimeRNN:
         self.dh = dh
 
         return dxs
+
+class TimeEmbedding:
+    def __init__(self, W):
+        self.params = [W]
+        self.grads = [np.zeros_like(W)]
+        self.layers = None
+        self.W = W
+
+    def forward(self, xs):
+        N, T = xs.shape   # hoho_todo, 如何传xs参数？(xs没有了D维)
+        V, D = self.W.shape
+
+        out = np.empty((N, T, D), astype='f')
+        self.layers = []
+
+        for t in range(T):
+            layer = Embedding(self.W)
+            out[:, t, :] = layer.forward(xs[:, t])
+            self.layer.append(layer)
+        
+        return out
+
+    def backward(self, dout):
+        N, T, D = dout.shape
+
+        grad = 0
+        for t in range(T):
+            layer = self.layers[t]
+            layer.backward(dout[:, t, :])
+            grad += layer.grads[0]  # 因为Wx是共享的（向前计算时要复制多份），所以反向传播时要相加
+        
+        self.grads[0][...] = grad
+
+        return None
+
+
+class TimeAffine:
+    def __init__(self, W, b):
+        self.params = [W, b]
+        self.grads = [np.zeros_like(W), np.zeros_like(b)]
+        self.x = None
+
+    def forward(self, x):
+        N, T, D = x.shape
+        W, b = self.params
+
+        rx = x.reshape(N * T, -1)
+        out = np.dot(rx, W) + b
+        self.x = x
+        return out.reshape(N, T, -1)
+    
+    def backward(self, dout):
+        x = self.x
+        N, T, D = x.shape
+        W, b = self.params
+
+        dout = dout.reshape(N * T, -1)
+        rx = x.reshape(N * T, -1)
+
+        db = np.sum(dout, axis=0)  # b进行向前计算时进行广播处理，所以复制了多份（有多少份样本数据就复制多少个b向量），所以反向传播时b的梯度要相加
+        dW = np.dot(rx.T, dout)
+        dx = np.dot(dout, W.T)
+        dx = dx.reshape(*x.shape)
+
+        self.grads[0][...] = dW
+        self.grads[1][...] = db
+
+        return dx
+
+    
+class TimeSoftmaxWithLoss:
+    def __init__(self):
+        self.params, self.grads = [], []
+        self.cache = None
+        self.ignore_label = -1
+
+    def forward(self, xs, ts):  # ts为正确解的标签序列
+        N, T, V = xs.shape
+
+        if ts.ndim == 3:
+            ts = ts.argmax(axis=2)
+        
+        mask = (ts != self.ignore_label)
+
+        xs = xs.reshape(N * T, V)
+        ts = ts.reshape(N * T)
+        mask = mask.reshape(N * T)
+
+        ys = softmax(xs)
+        ls = np.log(ys[np.arange(N * T), ts])
+        ls *= mask
+        loss = -np.sum(ls)
+        loss /= mask.sum()
+
+        self.cache = (ts, ys, mask, (N, T, V))
+        return loss
+
+    def backward(self, dout=1):
+        ts, ys, mask, (N, T, V) = self.cache
+
+        dx = ys
+        dx[np.arange(N * T), ts] -= 1
+        dx *= dout
+        dx /= mask.sum()
+        dx *= mask[:, np.newaxis]
+        dx = dx.reshape((N, T, V))
+
+        return dx
