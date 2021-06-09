@@ -162,6 +162,23 @@ class EmbeddingDot:
         dh = dout * target_W
         return dh
 
+class Dropout:
+
+    def __init__(self, dropout_ratio=0.5):
+        self.params, self.grads = [], []
+        self.dropout_ratio = dropout_ratio
+        self.mask = None
+
+    def forward(self, x, train_flg=True):
+        if train_flg:  # 训练时用
+            self.mask = np.random.rand(*x.shape) > self.dropout_ratio
+            return x * self.mask
+        else:   # 预测时用
+            return x * (1.0 - self.dropout_ratio)
+        
+    def backward(self, dout):
+        return dout * self.mask
+
 
 if __name__ == '__main__':
     print('done')

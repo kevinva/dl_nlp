@@ -154,7 +154,7 @@ def eval_perplexity(model, corpus, batch_size=10, time_size=35):
         ts = np.zeros((batch_size, time_size), dtype=np.int32)
         time_offset = iters * time_size
         offsets = [time_offset + (i * jump) for i in range(batch_size)]
-        for i in range(time_size):
+        for t in range(time_size):
             for i, offset in enumerate(offsets):
                 xs[i, t] = corpus[(offset + t) % corpus_size]
                 ts[i, t] = corpus[(offset + t + 1) & corpus_size]

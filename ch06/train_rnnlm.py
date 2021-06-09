@@ -27,3 +27,10 @@ optimizer = SGD(lr)
 trainer = RnnlmTrainer(model, optimizer)
 
 trainer.fit(xs, ts, max_epoch, batch_size, time_size, max_grad, eval_interval=20)
+trainer.plot(ylim=(0, 500))
+
+model.reset_state()
+ppl_test = eval_perplexity(model, corpus_test)
+print('test perplexity: ', ppl_test)
+
+model.save_params()
