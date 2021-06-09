@@ -62,7 +62,7 @@ class Trainer:
 
 class RnnlmTrainer:
     def __init__(self, model, optimizer):
-        self.mode = model
+        self.model = model
         self.optimizer = optimizer
         self.time_idx = None
         self.ppl_list = None
@@ -77,7 +77,7 @@ class RnnlmTrainer:
         jump = data_size // batch_size
         offsets = [i * jump for i in range(batch_size)]
 
-        for timee in range(time_size):
+        for time in range(time_size):
             for i, offset in enumerate(offsets):
                 batch_x[i, time] = x[(offset + self.time_idx) % data_size]
                 batch_t[i, time] = t[(offset + self.time_idx) % time_size]

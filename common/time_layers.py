@@ -251,11 +251,11 @@ class LSTM:
         do *= o * (1 - o)
         dg *= (1 - g ** 2)
 
-        dA = np.hstack(df, dg, di, do)
+        dA = np.hstack((df, dg, di, do))
 
         dWh = np.dot(h_prev.T, dA)
         dWx = np.dot(x.T, dA)
-        db = dA.sum(axis=2)
+        db = dA.sum(axis=0)
 
         self.grads[0][...] = dWx
         self.grads[1][...] = dWh
@@ -270,7 +270,7 @@ class LSTM:
 class TimeLSTM:
     def __init__(self, Wx, Wh, b, stateful=False):
         self.params = [Wx, Wh, b]
-        self.grads = [np.zeros_like(Wx), np.zeros_lik(Wh), np.zeros_like(b)]
+        self.grads = [np.zeros_like(Wx), np.zeros_like(Wh), np.zeros_like(b)]
         self.layers= None
         self.h, self.c = None, None
         self.dh = None
@@ -303,15 +303,15 @@ class TimeLSTM:
         N, T, H = dhs.shape
         D = Wx.shape[0]
 
-        dxs = np.empty((N, T, D), dtpe='f')
-        dh, hc = 0, 0
+        dxs = np.empty((N, T, D), dtype='f')
+        dh, dc = 0, 0
 
-        grads = [0, 0, 0, 0]
+        grads = [0, 0, 0]
         for t in reversed(range(T)):
             layer = self.layers[t]
             dx, dh, dc = layer.backward(dhs[:, t, :] + dh, dc)
-            dxs[: t, :] = dx
-            for i, grad in enumerate(layer.garads):
+            dxs[:, t, :] = dx
+            for i, grad in enumerate(layer.grads):
                 grads[i] += grad
         
         for i, grad in enumerate(grads):

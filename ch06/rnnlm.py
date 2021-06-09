@@ -14,7 +14,7 @@ class Rnnlm(BaseModel):
         lstm_Wx = (rn(D, 4 * H) / np.sqrt(D)).astype('f')
         lstm_Wh = (rn(H, 4 * H) / np.sqrt(H)).astype('f')
         lstm_b = np.zeros(4 * H).astype('f')
-        affine_W = (rn(H, V) / nnp.sqrt(H)).astype('f')
+        affine_W = (rn(H, V) / np.sqrt(H)).astype('f')
         affine_b = np.zeros(V).astype('f')
 
         self.layers = [
