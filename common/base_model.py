@@ -28,7 +28,7 @@ class BaseModel:
         with open(file_name, 'wb') as f:
             pickle.dump(params,f)
 
-    def laod_params(self, file_name=None):
+    def load_params(self, file_name=None):
         if file_name is None:
             file_name = self.__class__.__name__ + '.pkl'
         
