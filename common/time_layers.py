@@ -272,17 +272,18 @@ class TimeLSTM:
         self.params = [Wx, Wh, b]
         self.grads = [np.zeros_like(Wx), np.zeros_like(Wh), np.zeros_like(b)]
         self.layers= None
+
         self.h, self.c = None, None
         self.dh = None
         self.stateful = stateful
 
     def forward(self, xs):
         Wx, Wh, b = self.params
-        N, T, D= xs.shape
+        N, T, D = xs.shape
         H = Wh.shape[0]
 
         self.layers = []
-        hs = np.empty((N, T, D), dtype='i')
+        hs = np.empty((N, T, D), dtype='f')
 
         if not self.stateful or self.h is None:
             self.h = np.zeros((N, H), dtype="f")
@@ -316,7 +317,6 @@ class TimeLSTM:
         
         for i, grad in enumerate(grads):
             self.grads[i][...] = grad
-            
         self.dh = dh
         return dxs
     
