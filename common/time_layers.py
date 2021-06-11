@@ -283,7 +283,7 @@ class TimeLSTM:
         H = Wh.shape[0]
 
         self.layers = []
-        hs = np.empty((N, T, D), dtype='f')
+        hs = np.empty((N, T, H), dtype='f')
 
         if not self.stateful or self.h is None:
             self.h = np.zeros((N, H), dtype="f")

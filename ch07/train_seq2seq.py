@@ -11,6 +11,8 @@ from seq2seq import Seq2seq
 
 (x_train, t_train), (x_test, t_test) = sequence.load_data('addition.txt')
 char_to_id, id_to_char = sequence.get_vocab()
+print(x_train)
+print(t_train)
 
 vocab_size = len(char_to_id)
 wordvec_size = 16
