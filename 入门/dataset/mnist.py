@@ -11,7 +11,7 @@ import numpy as np
 
 
 # url_base = 'http://yann.lecun.com/exdb/mnist/'
-url_base = 'http://raw.githubusercontent.com/zalandoresearch/fashion-mnist/master/data/fashion/'
+url_base = 'https://raw.githubusercontent.com/zalandoresearch/fashion-mnist/master/data/fashion/'
 key_file = {
     'train_img':'train-images-idx3-ubyte.gz',
     'train_label':'train-labels-idx1-ubyte.gz',
